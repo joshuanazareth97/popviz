@@ -1,29 +1,44 @@
 from scraper.utils import get_parsed_webpage
+from pathlib import Path
+import json
 
+from tqdm import tqdm
 
 class IMDBScraper:
     """
         Utility class which allows the retrieval of episode related data from IMDb.
-        Instantiated with series ID(s)
+        Instantiated with series ID
     """
+    __privates__ = ["cached_episode_data", "episode_data"]
 
     BASE_URL = "https://www.imdb.com/title"
 
-    def __init__(self, series_ID):
+    def __init__(self, series_ID, log=True):
+        self.log = True
         self.series = series_ID
         self.url = f"{self.BASE_URL}/{self.series}"
-        self.latest_season = self._get_latest_season()
+        self.data_file = Path.cwd() / f"data/{self.series}.json"
+        self.cached_episode_data = []
+        self.episode_data = []
+        if self.data_file.exists():
+            with self.data_file.open() as fp:
+                self.cached_episode_data = json.load(fp)
+        self._get_show_data()
+        self._get_latest_season()
+
+    @property
+    def seasons(self):
+        if self.cached_episode_data:
+            return self.cached_episode_data
+        else:
+            self.get_all_seasons()
+            return self.episode_data
 
     def _get_latest_season(self):
         webpage = get_parsed_webpage(f"{self.url}/episodes?season=0")
-        latest_season = (
-            webpage.find("h3", id="episode_top")
-            .text.strip()
-            .replace("Season\xa0", "")
-        )
-        return int(latest_season)
+        self.latest_season = self._get_season_data(webpage)
 
-    def get_show_data(self):
+    def _get_show_data(self):
         """
             Returns a dictionary of show level data
         """
@@ -65,7 +80,14 @@ class IMDBScraper:
             poster_url=poster,
         )
         data.update(additional_details)
-        return data
+        self.show_data = data
+
+    @property
+    def show_metadata(self):
+        if self.show_data:
+            return self.show_data
+        else:
+            raise ValueError("No show data found. Are you sure you have instantiated the object properly?")
 
     @staticmethod
     def _get_additional_details(details):
@@ -89,8 +111,6 @@ class IMDBScraper:
 
     @staticmethod
     def _get_episode_data(episode_tag):
-        image_div = episode_tag.select("div.image img")[0]
-        image_url = image_div["src"]
         info_div = episode_tag.find("div", class_="info")
         try:
             ep_number = info_div.find("meta")["content"].strip()
@@ -108,14 +128,21 @@ class IMDBScraper:
         try:
             rating = rating_div.select("span.ipl-rating-star__rating")[0].text.strip()
             num_ratings = rating_div.select("span.ipl-rating-star__rating")[0].text.strip()
-        except AttributeError:
+        except (IndexError, AttributeError):
             rating = ""
             num_ratings = ""
+
+        try:
+            image_div = episode_tag.select("div.image img")[0]
+            image_url = image_div["src"]
+        except (IndexError, AttributeError):
+            image_url = ""
 
         try:
             title = info_div.select_one("strong a").text.strip()
         except AttributeError:
             title = ""
+
         return dict(
             title=title,
             airdate=airdate,
@@ -131,28 +158,45 @@ class IMDBScraper:
             Returns a generator of dictionaries (seasons),
             each contains an "episodes" key with a list of episodes for that season.
         """
-        for season in range(1, self.latest_season + 1):
-            yield self.get_season_data(season=season)
+        seasons = range(1, self.latest_season["number"])
+        if self.log:
+            seasons = tqdm(seasons, total=self.latest_season["number"], desc="Retrieving data season-wise")
+        for season in seasons:
+            episode_list_url = f"{self.url}/episodes?season={season}"
+            webpage = get_parsed_webpage(episode_list_url)
+            self.episode_data.append(self._get_season_data(season_page=webpage))
 
 
-    def get_season_data(self, season=1):
+    def _get_season_data(self, season_page):
         """
             Returns a dictionary with key "episodes",
-            for the season no. specified in the parameter `season`
+            by parsing the html page provided in the webpage param.
         """
-        season = int(season)
-        episode_list_url = f"{self.url}/episodes?season={season}"
-        webpage = get_parsed_webpage(episode_list_url)
+        season = (
+            season_page.find("h3", id="episode_top")
+            .text.strip()
+            .replace("Season\xa0", "")
+        )
         data = {
-            "number": season,
+            "number": int(season),
             "episodes": []
         }
-        list_wrapper = webpage.select("div.list #episodes_content")[0]
+        list_wrapper = season_page.select("div.list #episodes_content")[0]
         epsiode_list = list_wrapper.find("div", class_="eplist")
         for episode in epsiode_list.find_all("div", class_="list_item"):
             data["episodes"].append(IMDBScraper._get_episode_data(episode))
         return data
 
+    def dump(self):
+        if not self.episode_data:
+            if self.log: print("No new data loaded, so there is nothing to dump.")
+            return
+        if self.data_file.exists():
+            if self.log: print("Overwriting data file...")
+        with self.data_file.open("w+") as fp:
+            json.dump(self.episode_data, fp)
+        if self.log: print("File written successfully.")
+        
 
 if __name__ == "__main__":
-    pass
+    print("Please run this scraper by importing the IMDBScraper class <scraper.IMDBScraper>")
