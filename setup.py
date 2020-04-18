@@ -13,7 +13,7 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = 'PopViz'
-DESCRIPTION = 'A command-line tool that allows you to search for TV Shows and generate a report to visualise their IMDb ratings.'
+DESCRIPTION = 'A command-line tool written in Python to scrape ratings data of TV Series from IMDb and display the results in a beautiful chart.'
 URL = 'https://github.com/me/myproject'
 EMAIL = 'joshuanazareth97@gmail.com'
 AUTHOR = 'Joshua Nazareth'
