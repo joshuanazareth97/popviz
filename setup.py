@@ -116,7 +116,7 @@ setup(
     # py_modules=['mypackage'],
 
     entry_points={
-        'console_scripts': ['popviz=cli.app:main'],
+        'console_scripts': ['popviz=cli'],
     },
     install_requires=REQUIRED,
     extras_require=EXTRAS,
