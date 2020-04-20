@@ -161,12 +161,16 @@ class IMDBScraper:
         """
         seasons = range(1, self.latest_season["number"])
         if self.log:
-            seasons = tqdm(seasons, total=self.latest_season["number"], desc="Retrieving data season-wise")
+            seasons = tqdm(seasons, desc="Retrieving data season-wise")
         for season in seasons:
             episode_list_url = f"{self.url}/episodes?season={season}"
             webpage = get_parsed_webpage(episode_list_url)
             self.episode_data.append(self._get_season_data(season_page=webpage))
-
+        # Check to see if the latest season is empty - Edge case
+        if all([episode["rating"] == '' for episode in self.latest_season["episodes"]]):
+            self.latest_season = self.episode_data[-1]
+        else:
+            self.episode_data.append(self.latest_season)
 
     def _get_season_data(self, season_page):
         """
