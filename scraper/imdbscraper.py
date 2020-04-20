@@ -192,10 +192,12 @@ class IMDBScraper:
             data["episodes"].append(IMDBScraper._get_episode_data(episode))
         return data
 
-    def dump(self):
+    def dump(self, filename=None, data_dir="./data"):
         if not self.episode_data:
             if self.log: print("No new data loaded, so there is nothing to dump.")
             return
+        if filename is not None:
+            self.data_file = Path(data_dir) / filename
         if self.data_file.exists():
             if self.log: print("Overwriting data file...")
         with self.data_file.open("w+") as fp:
