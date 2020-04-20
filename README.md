@@ -10,6 +10,8 @@ A command-line tool written in Python to scrape ratings data of TV Series from I
 
 * Add templates support to the reporter
 
+* Add multiple types of graphs to reporter (currently supports heatmaps)
+
 ## Getting Started
 
 This app can be run in several ways, depending on your use case.
