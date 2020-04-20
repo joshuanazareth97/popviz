@@ -34,6 +34,13 @@ class IMDBScraper:
             self.get_all_seasons()
             return self.episode_data
 
+    @property
+    def show_metadata(self):
+        if self.show_data:
+            return self.show_data
+        else:
+            raise ValueError("No show data found. Are you sure you have instantiated the object properly?")
+
     def _get_latest_season(self):
         webpage = get_parsed_webpage(f"{self.url}/episodes?season=0")
         self.latest_season = self._get_season_data(webpage)
@@ -82,12 +89,6 @@ class IMDBScraper:
         data.update(additional_details)
         self.show_data = data
 
-    @property
-    def show_metadata(self):
-        if self.show_data:
-            return self.show_data
-        else:
-            raise ValueError("No show data found. Are you sure you have instantiated the object properly?")
 
     @staticmethod
     def _get_additional_details(details):
