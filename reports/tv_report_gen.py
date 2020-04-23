@@ -27,6 +27,10 @@ class TVReport:
             self.ratings = self.ratings.transpose()
             average_shape = (1, self.n_seasons)
 
+    @property
+    def is_square(self):
+        return 1 <  max(self.ratings.shape)/min(self.ratings.shape) < 1.3 
+
     def _get_2d_array(self):
         ratings = []
         for season in self.data:
