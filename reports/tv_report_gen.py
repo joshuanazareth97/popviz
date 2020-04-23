@@ -34,12 +34,55 @@ class TVReport:
             ratings.append(episodes)
         return pad_zeroes(np.array(ratings))
 
-    def heatmap(self):
-        ratings = self._get_2d_array()
-        plt.figure(figsize=(8, 8))
-        mean = math.floor(np.concatenate(ratings).mean())
-        vmax = min(10, mean+5)
-        vmin = max(0, mean-5)
-        cmap = sns.cubehelix_palette(light=1, as_cmap=True)
-        ax = sns.heatmap(ratings, cmap=cmap, annot=True, square=True, linewidths=3, mask=(ratings==0), vmax=10, vmin=math.floor(ratings[np.nonzero(ratings)].min()));
-        plt.show()
+    def heatmap(self, color="red", filename=None):
+        colormap = {
+            'red': sns.color_palette("YlOrRd", 10),
+            'blue': sns.color_palette("YlGnBu", 10),
+        }
+        height, width = self.ratings.shape
+        yticks = np.arange(1, height+1)
+        y_label = "Season"
+        xticks = np.arange(1, width+1)
+        x_label = "Episode"
+        # Setting up matplotlib and seaborn
+        self._setup_page_layout()
+        fig = self.page["fig"]
+        
+        # Set up heatmap specific layout
+        title_ax, footer_ax = self.page["axes"]
+
+        if self.inverted:
+            main_section = gridspec.GridSpecFromSubplotSpec(2,2, height_ratios=[height, 1], width_ratios=[width, 0.5], subplot_spec=self.page["gridspec"][1, :])
+            main_ax = fig.add_subplot(main_section[0,0])
+            cbar_ax = fig.add_subplot(main_section[:,])
+        else:
+            main_section = gridspec.GridSpecFromSubplotSpec(1,3, width_ratios=[width, 1, 0.5], subplot_spec=self.page["gridspec"][1, :])
+            main_ax = fig.add_subplot(main_section[:,0])
+            cbar_ax = fig.add_subplot(main_section[:,2])
+
+
+        main_ax.xaxis.set_ticks_position('top')
+        main_ax.xaxis.set_label_position('top')
+        opts = {
+            "vmax": 10,#min(10, median + 3),
+            "vmin": math.floor(self.ratings[np.nonzero(self.ratings)].min()),#max(0, median - 3),
+            "cmap": colormap[color],#sns.cubehelix_palette(8, start=2, rot=0, dark=0, light=.95, reverse=True, as_cmap=True),#sns.color_palette("cubehelix_r", 10),
+            "mask": (self.ratings == 0),
+            "annot": True,
+            "square": True,
+            "linewidths": 1,
+            "xticklabels": xticks,
+            "yticklabels": yticks,
+            "ax": main_ax,
+            "cbar": False
+            # "cbar_ax": cbar
+        }
+        sns.heatmap(self.ratings, **opts);
+        sm = plt.cm.ScalarMappable(cmap="YlOrRd", norm=plt.Normalize(vmin=0, vmax=1))
+        fig.colorbar(main_ax.collections[0], cax=cbar_ax)
+        main_ax.set_xlabel(x_label)
+        main_ax.set_ylabel(y_label)
+        # plt.show()
+        if filename is None: filename = self.show_metadata['title'].replace(" ", "_").lower()
+        fig.savefig(f"./data/{filename}.png", dpi=300, bbox_inches="tight", pad_inches=0.4)
+        print("Heatmap generated, and saved to file.")
