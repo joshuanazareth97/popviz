@@ -8,9 +8,24 @@ from reports.utils import pad_zeroes
 
 class TVReport:
 
-    def __init__(self, data):
-        sns.set()
-        self.data = data
+    def __init__(self, data_provider):
+        sns.set(font_scale=0.7)
+        self.data = data_provider.seasons
+        self.show_metadata = data_provider.show_metadata
+        self.ratings = self._get_2d_array()
+        self.mean = math.floor(np.concatenate(self.ratings).mean())
+        self.median = math.floor(np.median(np.concatenate(self.ratings)))
+        self.n_seasons, self.n_episodes = self.ratings.shape
+        self.inverted = False
+        axis = 1
+        average_shape = (self.n_seasons, 1)
+        # Always ensure that the matrix is more or less landscape
+        if self.n_seasons > self.n_episodes and not self.is_square:
+            # Put seasons make seasons rows
+            self.inverted = True
+            axis = 0
+            self.ratings = self.ratings.transpose()
+            average_shape = (1, self.n_seasons)
 
     def _get_2d_array(self):
         ratings = []
