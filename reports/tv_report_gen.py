@@ -38,6 +38,35 @@ class TVReport:
             ratings.append(episodes)
         return pad_zeroes(np.array(ratings))
 
+    def _setup_page_layout(self, size="A4"):
+        size_map = {
+            "A4": (11.69, 8.27), # (width, height)
+            "A3": (16.53, 11.69)
+        }
+        assert size in size_map
+        page_width, page_height = size_map[size]
+        relative_heights = [1,5,3]
+        status = "Not Square"
+        optional_params = dict(xy=(0.5, 0.5), 
+            xycoords='axes fraction',
+            va='center', 
+            ha='center')
+        if self.is_square: 
+            status = "Square"
+            # relative_heights = [1,3,5]
+            page_height, page_width = page_width, page_height
+
+        fig = plt.figure(figsize=(page_width, page_height), dpi=300, constrained_layout=True)
+        fig.set_size_inches(page_width, page_height)
+        spec = gridspec.GridSpec(figure=fig, ncols=1, nrows=3, height_ratios=relative_heights)
+        title = fig.add_subplot(spec[0, :]).annotate(f"{self.show_metadata['title']}", **optional_params)
+        info = fig.add_subplot(spec[2, :]).annotate('Info', **optional_params)
+        self.page = {
+            "fig": fig,
+            "axes": [title, info],
+            "gridspec": spec
+        }
+
     def heatmap(self, color="red", filename=None):
         colormap = {
             'red': sns.color_palette("YlOrRd", 10),
