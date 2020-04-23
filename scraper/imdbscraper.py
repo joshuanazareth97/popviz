@@ -44,6 +44,12 @@ class IMDBScraper:
     def _get_latest_season(self):
         webpage = get_parsed_webpage(f"{self.url}/episodes?season=0")
         self.latest_season = self._get_season_data(webpage)
+        # Check to see if the latest season(s) are empty empty - Edge case
+        while all([episode["rating"] == '' for episode in self.latest_season["episodes"]]):
+            latest = self.latest_season["number"] - 1
+            webpage = get_parsed_webpage(f"{self.url}/episodes?season={latest}")
+            self.latest_season = self._get_season_data(webpage)
+
 
     def _get_show_data(self):
         """
@@ -166,11 +172,7 @@ class IMDBScraper:
             episode_list_url = f"{self.url}/episodes?season={season}"
             webpage = get_parsed_webpage(episode_list_url)
             self.episode_data.append(self._get_season_data(season_page=webpage))
-        # Check to see if the latest season is empty - Edge case
-        if all([episode["rating"] == '' for episode in self.latest_season["episodes"]]):
-            self.latest_season = self.episode_data[-1]
-        else:
-            self.episode_data.append(self.latest_season)
+        self.episode_data.append(self.latest_season)
 
     def _get_season_data(self, season_page):
         """
