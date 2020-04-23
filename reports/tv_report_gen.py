@@ -2,7 +2,7 @@ import math
 
 import numpy as np
 import seaborn as sns
-import matplotlib.pyplot as plt
+from matplotlib import gridspec, pyplot as plt
 
 from reports.utils import pad_zeroes
 
@@ -26,6 +26,9 @@ class TVReport:
             axis = 0
             self.ratings = self.ratings.transpose()
             average_shape = (1, self.n_seasons)
+
+        # can't use np.mean() or np.average() because we have to ignore non-zero elements in ratings
+        self.season_averages = np.true_divide(self.ratings.sum(axis),(self.ratings!=0).sum(axis)).reshape(average_shape) # use count of non zero items to find the average
 
     @property
     def is_square(self):
@@ -87,15 +90,18 @@ class TVReport:
         if self.inverted:
             main_section = gridspec.GridSpecFromSubplotSpec(2,2, height_ratios=[height, 1], width_ratios=[width, 0.5], subplot_spec=self.page["gridspec"][1, :])
             main_ax = fig.add_subplot(main_section[0,0])
+            average_ax = fig.add_subplot(main_section[1,0])
             cbar_ax = fig.add_subplot(main_section[:,])
         else:
             main_section = gridspec.GridSpecFromSubplotSpec(1,3, width_ratios=[width, 1, 0.5], subplot_spec=self.page["gridspec"][1, :])
             main_ax = fig.add_subplot(main_section[:,0])
+            average_ax = fig.add_subplot(main_section[:,1])
             cbar_ax = fig.add_subplot(main_section[:,2])
 
 
         main_ax.xaxis.set_ticks_position('top')
         main_ax.xaxis.set_label_position('top')
+        average_ax.xaxis.set_ticks_position('top')
         opts = {
             "vmax": 10,#min(10, median + 3),
             "vmin": math.floor(self.ratings[np.nonzero(self.ratings)].min()),#max(0, median - 3),
@@ -110,7 +116,22 @@ class TVReport:
             "cbar": False
             # "cbar_ax": cbar
         }
+        average_opts = opts.copy()
+        average_opts.update({
+                "yticklabels": False,
+                "xticklabels": ["Average"],
+                "ax": average_ax
+            })
+        if self.inverted: 
+            y_label, x_label = x_label, y_label
+            average_opts.update({
+                "yticklabels": ["Average"],
+                "xticklabels": False,
+            })
+
+        average_opts.pop("mask")
         sns.heatmap(self.ratings, **opts);
+        sns.heatmap(self.season_averages, **average_opts)
         sm = plt.cm.ScalarMappable(cmap="YlOrRd", norm=plt.Normalize(vmin=0, vmax=1))
         fig.colorbar(main_ax.collections[0], cax=cbar_ax)
         main_ax.set_xlabel(x_label)
