@@ -4,7 +4,7 @@ import numpy as np
 import seaborn as sns
 from matplotlib import gridspec, pyplot as plt
 
-from reports.utils import pad_zeroes
+from reports.utils import pad_nan
 
 class TVReport:
 
@@ -13,8 +13,8 @@ class TVReport:
         self.data = data_provider.seasons
         self.show_metadata = data_provider.show_metadata
         self.ratings = self._get_2d_array()
-        self.mean = math.floor(np.concatenate(self.ratings).mean())
-        self.median = math.floor(np.median(np.concatenate(self.ratings)))
+        self.mean = math.floor(np.nanmean(self.ratings))
+        self.median = math.floor(np.nanmedian(self.ratings))
         self.n_seasons, self.n_episodes = self.ratings.shape
         self.inverted = False
         axis = 1
@@ -39,7 +39,7 @@ class TVReport:
         for season in self.data:
             episodes = [np.float(episode["rating"]) for episode in season["episodes"] if episode["rating"]]
             ratings.append(episodes)
-        return pad_zeroes(np.array(ratings))
+        return pad_nan(np.array(ratings))
 
     def _setup_page_layout(self, size="A4"):
         size_map = {
@@ -104,7 +104,7 @@ class TVReport:
         average_ax.xaxis.set_ticks_position('top')
         opts = {
             "vmax": 10,#min(10, median + 3),
-            "vmin": math.floor(self.ratings[np.nonzero(self.ratings)].min()),#max(0, median - 3),
+            "vmin": math.floor(np.nanmin(self.ratings)),#max(0, median - 3),
             "cmap": colormap[color],#sns.cubehelix_palette(8, start=2, rot=0, dark=0, light=.95, reverse=True, as_cmap=True),#sns.color_palette("cubehelix_r", 10),
             "mask": (self.ratings == 0),
             "annot": True,
