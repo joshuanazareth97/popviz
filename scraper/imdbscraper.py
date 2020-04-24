@@ -30,9 +30,9 @@ class IMDBScraper:
     def seasons(self):
         if self.cached_episode_data:
             return self.cached_episode_data
-        else:
+        elif not self.episode_data:
             self.get_all_seasons()
-            return self.episode_data
+        return self.episode_data
 
     @property
     def show_metadata(self):
