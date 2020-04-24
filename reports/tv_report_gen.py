@@ -32,7 +32,7 @@ class TVReport:
 
     @property
     def is_square(self):
-        return 1 <  max(self.ratings.shape)/min(self.ratings.shape) < 1.3 
+        return 1 <=  max(self.ratings.shape)/min(self.ratings.shape) < 1.3 
 
     def _get_2d_array(self):
         ratings = []
