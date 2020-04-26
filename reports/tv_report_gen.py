@@ -2,9 +2,9 @@ import math
 
 import numpy as np
 import seaborn as sns
-from matplotlib import gridspec, pyplot as plt
+from matplotlib import gridspec, offsetbox, pyplot as plt
 
-from reports.utils import pad_nan
+from reports.utils import pad_nan, wrap_text
 
 class TVReport:
 
@@ -67,9 +67,82 @@ class TVReport:
         info = fig.add_subplot(spec[2, :]).annotate('Info', **optional_params)
         self.page = {
             "fig": fig,
-            "axes": [title, info],
-            "gridspec": spec
+    def _fill_episode_info(self, ax, cat="best"):
+        best = cat == "best"
+        info_params = dict(
+            xycoords="axes fraction", va="center", ha="left" if best else "right",
+        )
+        ep_list = self._get_episode(cat=cat)
+        horizontal_margin = 0.02 if best else 0.98
+        rating = ep_list[0]["rating"]
+        rating_box_params = dict()
+        rating_color = "#27ae60" if best else "#e74c3c"
+        # at.patch.set_boxstyle("round,pad=0.,rounding_size=0.2")
+        # at.patch.set_edgecolor(rating_color)
+        # at.patch.set_facecolor(rating_color)
+        # ax.add_artist(at)
+        title = ax.annotate(
+            f"{cat.title()} rated episode(s)",
+            xy=(horizontal_margin, 0.8),
+            color="#2980b9",
+            size=16,
+            **info_params,
+        )
+        title_box = title.get_window_extent(
+            renderer=title.get_figure().canvas.get_renderer()
+        )
+        rating_loc = (title_box.width + 50, 0) if best else (-title_box.width - 50, 0)
+        rating = ax.annotate(
+            rating,
+            xy=(horizontal_margin, 0.8),
+            size=14,
+            color="w",
+            xytext=rating_loc,
+            textcoords="offset pixels",
+            bbox=dict(boxstyle="round", fc=rating_color),
+            **info_params,
+        )
+        vertical = 0.6
+        info_params.update(
+            {
+                # "ha": "left" if cat == "best" else "right",
+                "size": 12,
         }
+        )
+        vertical_dist = 0.15 if self.is_square else 0.25
+        for ep in ep_list:
+            title = ep["title"]
+            s = ep["season"]
+            e = int(ep["episode_number"])
+            plot = wrap_text(ep["plot"], 45)
+            ax.annotate(
+                f"S{s:02d}E{e:02d} - {title}",
+                xy=(horizontal_margin, vertical),
+                **info_params,
+            )
+            vertical -= vertical_dist
+            if len(ep_list) == 1:
+                ep_plot = ax.annotate(
+                    "\n".join(plot), xy=(horizontal_margin, vertical), **info_params,
+                )
+                vertical -= 0.1 * len(plot)
+            vertical -= 0.05  # Episode differentiation buffer
+            if vertical < 0:
+                break
+
+    def _get_episode(self, cat="best"):
+        criteria = np.nanmax if cat == "best" else np.nanmin
+        result = np.where(
+            self.ratings == criteria(self.ratings)
+        )  # two tuples, with row, column indices respectively
+        episode_list = []
+        for season, episode in zip(*result):
+            if self.inverted:
+                episode, season = season, episode  # season will be across columns
+            episode_data = self.data[season]["episodes"][episode]
+            episode_data["season"] = int(season)
+            episode_list.append(episode_data)
+        return episode_list
 
     def heatmap(self, color="red", filename=None):
         colormap = {
@@ -86,7 +159,7 @@ class TVReport:
         fig = self.page["fig"]
         
         # Set up heatmap specific layout
-        title_ax, footer_ax = self.page["axes"]
+        title_ax, best_ep_ax, worst_ep_ax = self.page["axes"]
 
         if self.inverted:
             main_section = gridspec.GridSpecFromSubplotSpec(2,2, height_ratios=[height, 1], width_ratios=[width, 0.5], subplot_spec=self.page["gridspec"][1, :])
