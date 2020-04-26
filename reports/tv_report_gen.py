@@ -27,8 +27,9 @@ class TVReport:
             self.ratings = self.ratings.transpose()
             average_shape = (1, self.n_seasons)
 
-        # can't use np.mean() or np.average() because we have to ignore non-zero elements in ratings
-        self.season_averages = np.true_divide(self.ratings.sum(axis),(self.ratings!=0).sum(axis)).reshape(average_shape) # use count of non zero items to find the average
+        self.season_averages = np.nanmean(self.ratings, axis=axis).reshape(
+            average_shape
+        )
 
     @property
     def is_square(self):
