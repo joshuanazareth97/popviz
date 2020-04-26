@@ -28,5 +28,18 @@ def get_id_from_link(link):
         return result.group(1)
     return ""
 
+
 if __name__ == "__main__":
-    main()
+    print("Getting the top shows from IMDb")
+    data_dir = Path.cwd() / "data"
+    print(data_dir)
+    data_dir.mkdir(parents=True, exist_ok=True)
+    for title, link_id in get_show_ids():
+        print("=" * 50)
+        print(f"Visualizing {title}")
+        scraper = IMDBScraper(link_id)
+        reporter = TVReport(data_provider=scraper)
+        reporter.heatmap()
+        scraper.dump()
+        print("=" * 50)
+        print()
