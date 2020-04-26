@@ -4,11 +4,13 @@ import json
 
 from tqdm import tqdm
 
+
 class IMDBScraper:
     """
-        Utility class which allows the retrieval of episode related data from IMDb.
+        Scraper class which allows the retrieval of episode related data from IMDb.
         Instantiated with series ID
     """
+
     __privates__ = ["cached_episode_data", "episode_data"]
 
     BASE_URL = "https://www.imdb.com/title"
