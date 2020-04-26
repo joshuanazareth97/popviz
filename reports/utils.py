@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def pad_nan(matrix):
     """
     Take a jagged matrix, and convert it into square by filling all rows smaller than the longest with zeros.
@@ -10,3 +11,19 @@ def pad_nan(matrix):
     output.fill(np.nan)
     output[mask] = np.concatenate(matrix)
     return output
+
+
+def wrap_text(text, column_width=60):
+    char_count = 0
+    lines = []
+    line = ""
+    for word in text.split(" "):
+        char_count += len(word)
+        line += word + " "
+        if char_count >= column_width:
+            char_count = 0
+            lines.append(line)
+            line = ""
+    if line:
+        lines.append(line)
+    return lines
