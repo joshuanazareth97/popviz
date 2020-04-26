@@ -211,6 +211,5 @@ class TVReport:
         main_ax.set_xlabel(x_label)
         main_ax.set_ylabel(y_label)
         # plt.show()
-        if filename is None: filename = self.show_metadata['title'].replace(" ", "_").lower()
-        fig.savefig(f"./data/{filename}.png", dpi=300, bbox_inches="tight", pad_inches=0.4)
+        plt.close(fig)
         print("Heatmap generated, and saved to file.")
