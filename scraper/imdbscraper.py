@@ -43,17 +43,20 @@ class IMDBScraper:
         if self.show_data:
             return self.show_data
         else:
-            raise ValueError("No show data found. Are you sure you have instantiated the object properly?")
+            raise ValueError(
+                "No show data found. Are you sure you have instantiated the object properly?"
+            )
 
     def _get_latest_season(self):
         webpage = get_parsed_webpage(f"{self.url}/episodes?season=0")
         self.latest_season = self._get_season_data(webpage)
         # Check to see if the latest season(s) are empty empty - Edge case
-        while all([episode["rating"] == '' for episode in self.latest_season["episodes"]]):
+        while all(
+            [episode["rating"] == "" for episode in self.latest_season["episodes"]]
+        ):
             latest = self.latest_season["number"] - 1
             webpage = get_parsed_webpage(f"{self.url}/episodes?season={latest}")
             self.latest_season = self._get_season_data(webpage)
-
 
     def _get_show_data(self):
         """
@@ -99,7 +102,6 @@ class IMDBScraper:
         data.update(additional_details)
         self.show_data = data
 
-
     @staticmethod
     def _get_additional_details(details):
         remove_whitespace = lambda x: x.strip()
@@ -138,7 +140,9 @@ class IMDBScraper:
         rating_div = info_div.find("div", "ipl-rating-star")
         try:
             rating = rating_div.select("span.ipl-rating-star__rating")[0].text.strip()
-            num_ratings = rating_div.select("span.ipl-rating-star__rating")[0].text.strip()
+            num_ratings = rating_div.select("span.ipl-rating-star__rating")[
+                0
+            ].text.strip()
         except (IndexError, AttributeError):
             rating = ""
             num_ratings = ""
@@ -161,7 +165,7 @@ class IMDBScraper:
             rating=rating,
             num_ratings=num_ratings,
             plot=plot_summary,
-            poster_url=image_url
+            poster_url=image_url,
         )
 
     def get_all_seasons(self):
@@ -188,10 +192,7 @@ class IMDBScraper:
             .text.strip()
             .replace("Season\xa0", "")
         )
-        data = {
-            "number": int(season),
-            "episodes": []
-        }
+        data = {"number": int(season), "episodes": []}
         list_wrapper = season_page.select("div.list #episodes_content")[0]
         epsiode_list = list_wrapper.find("div", class_="eplist")
         for episode in epsiode_list.find_all("div", class_="list_item"):
@@ -200,16 +201,21 @@ class IMDBScraper:
 
     def dump(self, filename=None, data_dir="./data"):
         if not self.episode_data:
-            if self.log: print("No new data loaded, so there is nothing to dump.")
+            if self.log:
+                print("No new data loaded, so there is nothing to dump.")
             return
         if filename is not None:
             self.data_file = Path(data_dir) / filename
         if self.data_file.exists():
-            if self.log: print("Overwriting data file...")
+            if self.log:
+                print("Overwriting data file...")
         with self.data_file.open("w+") as fp:
             json.dump(self.episode_data, fp)
-        if self.log: print("File written successfully.")
-        
+        if self.log:
+            print(f"File written successfully to {self.data_file}.")
+
 
 if __name__ == "__main__":
-    print("Please run this scraper by importing the IMDBScraper class <scraper.IMDBScraper>")
+    print(
+        "Please run this scraper by importing the IMDBScraper class <scraper.IMDBScraper>"
+    )
