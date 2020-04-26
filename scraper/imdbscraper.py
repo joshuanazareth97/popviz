@@ -30,6 +30,8 @@ class IMDBScraper:
 
     @property
     def seasons(self):
+        if self.latest_season["number"] <= 1:
+            return [self.latest_season]
         if self.cached_episode_data:
             return self.cached_episode_data
         elif not self.episode_data:
