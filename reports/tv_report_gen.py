@@ -78,11 +78,11 @@ class TVReport:
         with sns.axes_style("dark"):
 
             title_ax = fig.add_subplot(spec[0, :])
-            show_info_ax = fig.add_subplot(spec[2, :])
+            spacer_ax = fig.add_subplot(spec[2, :])
             misc = fig.add_subplot(ep_info[:, 2])
             best_ep_ax = fig.add_subplot(ep_info[:, :2])
             worst_ep_ax = fig.add_subplot(ep_info[:, 3:])
-            for ax in [title_ax, best_ep_ax, worst_ep_ax, show_info_ax, misc]:
+            for ax in [title_ax, best_ep_ax, worst_ep_ax, spacer_ax, misc]:
                 sns.despine(ax=ax, bottom=True, left=True)  # , top=True, right=True)
                 ax.axes.xaxis.set_ticks([])
                 ax.axes.yaxis.set_ticks([])
