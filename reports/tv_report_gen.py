@@ -155,9 +155,14 @@ class TVReport:
             )
             vertical -= vertical_dist
             if len(ep_list) == 1:
+                info_params["size"] = 11
                 ep_plot = ax.annotate(
-                    "\n".join(plot), xy=(horizontal_margin, vertical), **info_params,
+                    "\n".join(plot),
+                    xy=(horizontal_margin, vertical),
+                    style="italic",
+                    **info_params,
                 )
+                info_params["size"] = 12
                 vertical -= 0.1 * len(plot)
             vertical -= 0.05  # Episode differentiation buffer
             if vertical < 0:
