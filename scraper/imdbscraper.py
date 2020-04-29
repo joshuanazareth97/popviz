@@ -114,6 +114,9 @@ class IMDBScraper:
             ep_time, tags, date = additional_data
         except:
             return {}
+        else:
+            result = re.search(r".+\((.+)\)", date)
+            date = result.group(1)
         tags = list(map(remove_whitespace, tags.split(",")))
         return {
             "tags": tags,

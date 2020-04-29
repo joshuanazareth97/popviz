@@ -88,10 +88,11 @@ class TVReport:
                 ax.axes.yaxis.set_ticks([])
 
         title_ax.annotate(f"{self.show_metadata['title']}", **title_params)
-        running_date = self.show_metadata.get("running_date", "").replace(
-            "TV Series ", ""
-        )
-        title_ax.annotate(running_date, **subtitle_params)
+        running_date = self.show_metadata.get(
+            "running_date", ""
+        )  # running date can be blank
+        if running_date:
+            title_ax.annotate(f"({running_date})", **subtitle_params)
         self._fill_episode_info(best_ep_ax, cat="best")
         self._fill_episode_info(worst_ep_ax, cat="worst")
         self.page = {
