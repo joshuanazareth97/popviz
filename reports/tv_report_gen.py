@@ -143,12 +143,13 @@ class TVReport:
                 "size": 12,
             }
         )
-        vertical_dist = 0.15 if self.is_square else 0.25
+        vertical_dist = 0.2
         for ep in ep_list:
             title = ep["title"]
             s = ep["season"]
             e = int(ep["episode_number"])
-            plot = wrap_text(ep["plot"], 45)
+            column_width = 40 if self.is_square else 45
+            plot = wrap_text(ep["plot"], column_width)
             ax.annotate(
                 f"S{s:02d}E{e:02d} - {title}",
                 xy=(horizontal_margin, vertical),
@@ -164,8 +165,8 @@ class TVReport:
                     **info_params,
                 )
                 info_params["size"] = 12
-                vertical -= 0.1 * len(plot)
-            vertical -= 0.05  # Episode differentiation buffer
+                vertical -= 0.05 * len(plot)
+            # vertical -= 0.05  # Episode differentiation buffer
             if vertical < 0:
                 break
 
