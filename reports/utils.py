@@ -1,4 +1,5 @@
 import numpy as np
+from regex import regex as re
 
 
 def pad_nan(matrix):
@@ -27,3 +28,10 @@ def wrap_text(text, column_width=60):
     if line:
         lines.append(line)
     return lines
+
+
+def format_filename(string):
+    string = string.lower()
+    filename = re.sub(r"[<>:\'\"\/\|?.*]", "", string)
+    filename = filename.replace(" ", "_")
+    return filename
