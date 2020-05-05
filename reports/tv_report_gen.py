@@ -216,7 +216,7 @@ class TVReport:
             episode_list.append(episode_data)
         return episode_list
 
-    def heatmap(self, color="red", filename=None):
+    def heatmap(self, color="red", filename=None, output_dir="."):
         colormap = {
             "red": sns.color_palette("YlOrRd", 10),
             "blue": sns.color_palette("YlGnBu", 10),
@@ -293,9 +293,9 @@ class TVReport:
         main_ax.set_ylabel(y_label)
         # plt.show()
         if filename is None:
-            filename = self.show_metadata["title"].replace(" ", "_").lower()
+            filename = format_filename(self.show_metadata["title"])
         fig.savefig(
-            f"./data/{filename}.png", dpi=300, bbox_inches="tight", pad_inches=0.2
+            f"{output_dir}/{filename}.png", dpi=300, bbox_inches="tight", pad_inches=0.2
         )
         plt.close(fig)
         print("Heatmap generated, and saved to file.")
