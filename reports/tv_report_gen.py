@@ -175,7 +175,7 @@ class TVReport:
                 "size": 12,
             }
         )
-        vertical_dist = 0.2
+        vertical_dist = 0.2 if self.is_square else 0.1
         for ep in ep_list:
             title = ep["title"]
             s = ep["season"]
@@ -190,6 +190,7 @@ class TVReport:
             vertical -= vertical_dist
             if len(ep_list) == 1:
                 info_params["size"] = 11
+                info_params["va"] = "top"
                 ep_plot = ax.annotate(
                     "\n".join(plot),
                     xy=(horizontal_margin, vertical),
