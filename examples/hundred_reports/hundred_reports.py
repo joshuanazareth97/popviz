@@ -23,7 +23,7 @@ def get_show_ids():
 
 
 def get_id_from_link(link):
-    result = re.search("\/title\/([A-Za-z0-9]+)\/", link)
+    result = re.search(r"\/title\/([A-Za-z0-9]+)\/", link)
     if result:
         return result.group(1)
     return ""
@@ -39,7 +39,7 @@ if __name__ == "__main__":
         print(f"Visualizing {title}")
         scraper = IMDBScraper(link_id)
         reporter = TVReport(data_provider=scraper)
-        reporter.heatmap()
+        reporter.heatmap(output_dir=data_dir)
         scraper.dump()
         print("=" * 50)
         print()
