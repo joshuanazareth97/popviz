@@ -39,8 +39,3 @@ def search(query):
             (get_data_from_row(child) for child in lst.children),
         )
     )
-
-
-if __name__ == "__main__":
-    q = input("Search term > ")
-    print(*search(q), sep="\n\n")
