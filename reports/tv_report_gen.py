@@ -4,7 +4,7 @@ import numpy as np
 import seaborn as sns
 from matplotlib import gridspec, offsetbox, pyplot as plt
 
-from reports.utils import pad_nan, wrap_text
+from reports.utils import pad_nan, wrap_text, format_filename
 
 
 class TVReport:
