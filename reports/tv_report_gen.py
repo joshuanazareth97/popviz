@@ -93,6 +93,32 @@ class TVReport:
         )  # running date can be blank
         if running_date:
             title_ax.annotate(f"({running_date})", **subtitle_params)
+        plot = wrap_text(self.show_metadata["plot_summary"], 110)
+        # title_ax.annotate(
+        #     "\n".join(plot), xy=(0.5, 0.55), style="italic", **metadata_params
+        # )
+        metadata_params["ha"] = "left"
+        # vertical_dist = 0.5 - 0.05 * len(plot)
+        vertical_dist = 0.5
+        writers = self.show_metadata.get("creators")
+        if writers:
+            writers = ", ".join(writers)
+            title_ax.annotate(
+                f"Writer(s): {writers}", xy=(0, vertical_dist), **metadata_params
+            )
+            vertical_dist -= 0.2
+        cast = self.show_metadata.get("stars")[:-1]
+        if cast:
+            cast = ", ".join(cast)
+            title_ax.annotate(f"Cast: {cast}", xy=(0, vertical_dist), **metadata_params)
+            vertical_dist -= 0.2
+        genres = self.show_metadata.get("tags")
+        if genres:
+            genres = ", ".join(genres)
+            title_ax.annotate(
+                f"Genre(s): {genres}", xy=(0, vertical_dist), **metadata_params
+            )
+
         self._fill_episode_info(best_ep_ax, cat="best")
         self._fill_episode_info(worst_ep_ax, cat="worst")
         self.page = {
