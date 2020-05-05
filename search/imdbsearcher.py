@@ -28,7 +28,7 @@ def get_data_from_row(row):
     return dict(showname=name, category=cat, year=year, id=show_id)
 
 
-def search(query):
+def search_imdb(query):
     encoded = urllib.parse.quote(query)
     url = f"https://www.imdb.com/find?q={encoded}&s=tt&ttype=tv"
     webpage = get_parsed_webpage(url)
