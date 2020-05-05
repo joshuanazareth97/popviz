@@ -50,21 +50,23 @@ class TVReport:
         size_map = {"A4": (11.69, 8.27), "A3": (16.53, 11.69)}  # (width, height)
         assert size in size_map
         page_width, page_height = size_map[size]
-        relative_heights = [1, 5, 2, 2]
+        relative_heights = [2, 5.5, 1, 2.5]
 
         title_params = dict(
-            xy=(0.5, 0.7), xycoords="axes fraction", va="center", ha="center", size=32
+            xy=(0.5, 0.9), xycoords="axes fraction", va="center", ha="center", size=28
         )
 
         subtitle_params = dict(
-            xy=(0.5, 0.2), xycoords="axes fraction", va="center", ha="center", size=14
+            xy=(0.5, 0.65), xycoords="axes fraction", va="center", ha="center", size=14
         )
+
+        metadata_params = dict(xycoords="axes fraction", va="center", size=12,)
 
         if self.is_square:
             # Change orientation to portrait
             page_height, page_width = page_width, page_height
-            title_params["size"] = 32
-            relative_heights = [1, 5, 1, 2]
+            subtitle_params["size"] = 18
+            relative_heights = [2.5, 5.5, 0.5, 2]
 
         fig = plt.figure(
             figsize=(page_width, page_height), dpi=300, constrained_layout=True
@@ -73,9 +75,13 @@ class TVReport:
         spec = gridspec.GridSpec(
             figure=fig, ncols=1, nrows=4, height_ratios=relative_heights
         )
-        ep_info = gridspec.GridSpecFromSubplotSpec(1, 5, subplot_spec=spec[3, :])
 
-        with sns.axes_style("dark"):
+        if self.is_square:
+        ep_info = gridspec.GridSpecFromSubplotSpec(1, 5, subplot_spec=spec[3, :])
+        else:
+            ep_info = gridspec.GridSpecFromSubplotSpec(1, 5, subplot_spec=spec[2:, :])
+
+        with sns.axes_style("white"):
 
             title_ax = fig.add_subplot(spec[0, :])
             spacer_ax = fig.add_subplot(spec[2, :])
