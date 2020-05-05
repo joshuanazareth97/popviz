@@ -1,6 +1,10 @@
-from scraper.utils import get_parsed_webpage
-from pathlib import Path
+import sys
 import json
+from pathlib import Path
+
+from regex import regex as re
+
+from scraper.utils import get_parsed_webpage
 
 from tqdm import tqdm
 
@@ -36,6 +40,9 @@ class IMDBScraper:
             return self.cached_episode_data
         elif not self.episode_data:
             self.get_all_seasons()
+        if not self.episode_data:
+            sys.exit()
+        # TODO: Add better handling for this edge case, at least a message
         return self.episode_data
 
     @property
@@ -190,11 +197,14 @@ class IMDBScraper:
             Returns a dictionary with key "episodes",
             by parsing the html page provided in the webpage param.
         """
-        season = (
-            season_page.find("h3", id="episode_top")
-            .text.strip()
-            .replace("Season\xa0", "")
-        )
+        try:
+            season = (
+                season_page.find("h3", id="episode_top")
+                .text.strip()
+                .replace("Season\xa0", "")
+            )
+        except AttributeError:
+            return {}
         data = {"number": int(season), "episodes": []}
         list_wrapper = season_page.select("div.list #episodes_content")[0]
         epsiode_list = list_wrapper.find("div", class_="eplist")
