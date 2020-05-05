@@ -212,7 +212,7 @@ class TVReport:
             if self.inverted:
                 episode, season = season, episode  # season will be across columns
             episode_data = self.data[season]["episodes"][episode]
-            episode_data["season"] = int(season)
+            episode_data["season"] = int(season) + 1
             episode_list.append(episode_data)
         return episode_list
 
