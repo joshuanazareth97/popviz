@@ -77,7 +77,7 @@ class TVReport:
         )
 
         if self.is_square:
-        ep_info = gridspec.GridSpecFromSubplotSpec(1, 5, subplot_spec=spec[3, :])
+            ep_info = gridspec.GridSpecFromSubplotSpec(1, 5, subplot_spec=spec[3, :])
         else:
             ep_info = gridspec.GridSpecFromSubplotSpec(1, 5, subplot_spec=spec[2:, :])
 
