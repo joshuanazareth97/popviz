@@ -33,6 +33,8 @@ def search_imdb(query):
     url = f"https://www.imdb.com/find?q={encoded}&s=tt&ttype=tv"
     webpage = get_parsed_webpage(url)
     lst = webpage.find("table", class_="findList")
+    if lst is None:
+        return []
     return list(
         filter(
             lambda show: show is not None,
