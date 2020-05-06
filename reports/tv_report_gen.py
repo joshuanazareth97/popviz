@@ -1,3 +1,4 @@
+from pathlib import Path
 import math
 
 import numpy as np
@@ -217,7 +218,9 @@ class TVReport:
             episode_list.append(episode_data)
         return episode_list
 
-    def heatmap(self, color="red", filename=None, output_dir="."):
+    def heatmap(
+        self, color="red",
+    ):
         colormap = {
             "red": sns.color_palette("YlOrRd", 10),
             "blue": sns.color_palette("YlGnBu", 10),
@@ -293,10 +296,21 @@ class TVReport:
         main_ax.set_xlabel(x_label)
         main_ax.set_ylabel(y_label)
         # plt.show()
+
+        self.fig = fig
+
+    def save_file(self, filename=None, output_dir="."):
+        if not self.fig:
+            print(
+                "Could not find a figure. Ensure that you have called the heatmap function."
+            )
+
         if filename is None:
             filename = format_filename(self.show_metadata["title"])
-        fig.savefig(
+        output_dir = Path(output_dir)
+        if not Path.exists(output_dir):
+            Path.mkdir(output_dir, parents=True)
+        self.fig.savefig(
             f"{output_dir}/{filename}.png", dpi=300, bbox_inches="tight", pad_inches=0.2
         )
-        plt.close(fig)
-        print("Heatmap generated, and saved to file.")
+        plt.close(self.fig)
