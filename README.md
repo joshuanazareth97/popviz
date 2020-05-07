@@ -78,7 +78,7 @@ See also the list of [contributors](https://github.com/joshuanazareth97/popviz/c
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICEhttps://setuptools.readthedocs.io/en/latest/NSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
 
