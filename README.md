@@ -48,23 +48,9 @@ After installation, run the app using:
     ```
 
 * or in your project by importing the package: 
-    ``` 
-        # Scrape the data for It's Aways Sunny in Phladelphia
 
-        from scraper import IMDBScraper
-        from tqdm import tqdm
+    ![Example usage in a script](/images/example.png)
 
-        iasip = IMDBScraper("tt0472954")
-        desc = "Retrieving data season-wise"
-        for season in iasip.seasons:
-            print(f"Season {season['number']}")
-            print(
-                map(lambda e: f"Episode {e['episode_number']}: {e['title']}",
-                    season["episodes"]),
-                end="\n\n"
-            )
-
-    ```
 See the [examples](/examples) directory for more.
 
 
