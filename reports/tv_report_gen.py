@@ -299,7 +299,7 @@ class TVReport:
 
         self.fig = fig
 
-    def save_file(self, filename=None, output_dir="."):
+    def save_file(self, filename=None, output_dir=".", file_format="png"):
         if not self.fig:
             print(
                 "Could not find a figure. Ensure that you have called the heatmap function."
@@ -307,10 +307,11 @@ class TVReport:
 
         if filename is None:
             filename = format_filename(self.show_metadata["title"])
+        filename = f"{filename}.{file_format}"
         output_dir = Path(output_dir)
         if not Path.exists(output_dir):
             Path.mkdir(output_dir, parents=True)
-        self.fig.savefig(
-            f"{output_dir}/{filename}.png", dpi=300, bbox_inches="tight", pad_inches=0.2
-        )
+        output_file = output_dir / filename
+        self.fig.savefig(output_file, dpi=300, bbox_inches="tight", pad_inches=0.2)
         plt.close(self.fig)
+        return output_file
