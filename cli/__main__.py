@@ -55,6 +55,8 @@ def main():
     input_term_group.add_argument(
         "-s", "--search", help="Search for a television show."
     )
+
+    # TODO: Add test to check if ID format is correct.
     input_term_group.add_argument(
         "-i", "--id", help="Directly provide the IMDb ID of a television show."
     )
@@ -66,7 +68,16 @@ def main():
         default=None,
     )
 
+    parser.add_argument(
+        "-c",
+        "--colorscheme",
+        help="Set the heatmap colorscheme. Defaults to blue.",
+        choices=["red", "blue"],
+        default="blue",
+    )
+
     args = parser.parse_args()
+
     if not args.id:
         if not args.search:
             query = input("Enter a search term for a television show > ")
@@ -78,11 +89,13 @@ def main():
         chosen_id = chosen["id"]
     else:
         chosen_id = args.id
+
     print("Retrieving show data...")
     scraper = IMDBScraper(chosen_id)
     reporter = TVReport(data_provider=scraper)
+
     print("\nGenerating report...")
-    reporter.heatmap()
+    reporter.heatmap(color=args.colorscheme)
     file = reporter.save_file(output_dir="./data", filename=args.output)
     print(f"Report saved to {file.absolute()}.")
 
