@@ -30,7 +30,7 @@ This app can be run in several ways, depending on your use case.
 
     ``` pip install -r requirements.txt ```
 
-## Example Usage
+### Example Usage
 
 After installation, run the app using:
 
@@ -56,6 +56,7 @@ After installation, run the app using:
             )
 
     ```
+See the [examples](/examples) directory for more.
 
 
 ## Built With
