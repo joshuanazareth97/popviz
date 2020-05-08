@@ -36,8 +36,17 @@ After installation, run the app using:
 
 * as a command-line utility: 
     ```
-    > popviz -h
+    > popviz [-h] [-s SEARCH | -i ID] [-o OUTPUT]
     ```
+
+    ```
+    -h, --help                    show this help message and exit
+    -s SEARCH, --search SEARCH    Search for a television show.
+    -i ID, --id ID                Directly provide the IMDb ID of a television show.
+    -o OUTPUT, --output OUTPUT    Specify a filename for the output. Defaults to the name of the show.
+    
+    ```
+
 * or in your project by importing the package: 
     ``` 
         # Scrape the data for It's Aways Sunny in Phladelphia
