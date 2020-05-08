@@ -185,7 +185,7 @@ class IMDBScraper:
         """
         seasons = range(1, self.latest_season["number"])
         if self.log:
-            seasons = tqdm(seasons, desc="Retrieving data season-wise")
+            seasons = tqdm(seasons, desc="Seasons")
         for season in seasons:
             episode_list_url = f"{self.url}/episodes?season={season}"
             webpage = get_parsed_webpage(episode_list_url)
