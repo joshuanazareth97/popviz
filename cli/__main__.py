@@ -13,6 +13,8 @@ def get_results_from_imdb(query):
         sys.exit(1)
     elif len(results) == 1:
         chosen = results[0]
+        print(f"Found a single result: {chosen['showname']} with ID {chosen['id']}")
+        input("Continue?")
     else:
         for num, result in enumerate(results):
             name = result["showname"]
@@ -21,7 +23,7 @@ def get_results_from_imdb(query):
             print(f"{num+1}. {name}\t({date})\t[{cat}]")
         print()
         while True:
-            choice = input("Choose one of the above shows > ")
+            choice = input("Choose one of the above shows (Or enter 0 to exit) > ")
             try:
                 choice = int(choice) - 1
             except ValueError:
@@ -45,11 +47,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="Generate beautiful reports of IMDb ratings data."
     )
-    parser.add_argument(
-        "-o",
-        "--output",
-        help="Specify a filename for the output. Defaults to the name of the show.",
-    )
+
     input_term_group = parser.add_mutually_exclusive_group()
     input_term_group.add_argument(
         "-s", "--search", help="Search for a television show."
@@ -57,13 +55,21 @@ def main():
     input_term_group.add_argument(
         "-i", "--id", help="Directly provide the IMDb ID of a television show."
     )
+
+    parser.add_argument(
+        "-o",
+        "--output",
+        help="Specify a filename for the output. Defaults to the name of the show.",
+    )
+
     args = parser.parse_args()
     if not args.id:
         if not args.search:
             query = input("Enter a search term for a television show > ")
+            print()
         else:
             query = args.search.strip()
-            print(f'Searching for "{query}" on IMDb...')
+        print(f'Searching for "{query}" on IMDb...')
         chosen = get_results_from_imdb(query)
         chosen_id = chosen["id"]
     else:
@@ -73,7 +79,7 @@ def main():
     print("Generating report...")
     reporter.heatmap()
     file = reporter.save_file(output_dir="./data")
-    print(f"Report saved to {file}.")
+    print(f"Report saved to {file.absolute()}.")
 
 
 if __name__ == "__main__":
