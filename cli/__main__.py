@@ -13,8 +13,11 @@ def get_results_from_imdb(query):
         sys.exit(1)
     elif len(results) == 1:
         chosen = results[0]
-        print(f"Found a single result: {chosen['showname']} with ID {chosen['id']}")
+        print(
+            f"Found a single result: {chosen['showname']} ({chosen['year']}) with ID {chosen['id']}"
+        )
         input("Continue?")
+        print()
     else:
         for num, result in enumerate(results):
             name = result["showname"]
@@ -35,7 +38,7 @@ def get_results_from_imdb(query):
             try:
                 chosen = results[choice]
             except IndexError:
-                print("Please enter a number present in the list above.")
+                print("Please enter a number present in the list above.\n")
                 continue
             break
         print(f"You have chosen {chosen['showname']} with ID: {chosen['id']}\n")
@@ -75,11 +78,12 @@ def main():
         chosen_id = chosen["id"]
     else:
         chosen_id = args.id
+    print("Retrieving show data...")
     scraper = IMDBScraper(chosen_id)
     reporter = TVReport(data_provider=scraper)
-    print("Generating report...")
+    print("\nGenerating report...")
     reporter.heatmap()
-    file = reporter.save_file(output_dir="./data")
+    file = reporter.save_file(output_dir="./data", filename=args.output)
     print(f"Report saved to {file.absolute()}.")
 
 
