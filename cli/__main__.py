@@ -60,6 +60,7 @@ def main():
         "-o",
         "--output",
         help="Specify a filename for the output. Defaults to the name of the show.",
+        default=None,
     )
 
     args = parser.parse_args()
