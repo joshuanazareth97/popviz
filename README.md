@@ -40,11 +40,11 @@ After installation, run the app using:
     ```
 
     ```
-    -h, --help                    show this help message and exit
-    -s SEARCH, --search SEARCH    Search for a television show.
-    -i ID, --id ID                Directly provide the IMDb ID of a television show.
-    -o OUTPUT, --output OUTPUT    Specify a filename for the output. Defaults to the name of the show.
-    
+    -h, --help                      show this help message and exit
+    -s SEARCH, --search SEARCH      Search for a television show.
+    -i ID, --id ID                  Directly provide the IMDb ID of a television show.
+    -o OUTPUT, --output OUTPUT      Specify a filename for the output. Defaults to the name of the show.
+    -c, --color-scheme {red,blue}   Set the heatmap colorscheme. Defaults to blues. 
     ```
 
 * or in your project by importing the package: 
